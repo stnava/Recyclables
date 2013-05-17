@@ -1,0 +1,6 @@
+#!/bin/bash
+for x in 1 2 3 ; do 
+  pdflatex src/recyclables
+  bibtex recyclables
+done
+rm recyclables.aux recyclables.bbl recyclables.log recyclables.blg recyclables.out
