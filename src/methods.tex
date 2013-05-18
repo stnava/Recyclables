@@ -1,7 +1,7 @@
 \section{Image Processing Methods}
 
 All MRI volumes will be processed, at PENN and UCSF, using Advanced Normalization Tools (ANTs)
- \href{http://www.picsl.upenn.edu/ANTS}{(click here for link)}\cite{Avants2011a,Avants2011,Murphy2011,Tustison2010,Tustison2011,Tustison2011a} via previously reported procedures validated as highly accurate \cite{Klein2009,Klein2010,Murphy2011,Avants2011}.  For both PENN and FTLDNI data, the processing constructs a multiple-modality cohort-specific template that captures the average shape and appearance of T1, DTI and perfusion images, as in \cite{Avants2011,Jain2012}.  We use the template to guide brain extraction for all modalities.  We estimate cortical thickness using DiReCT \cite{Das2009a} from the T1 image.  All modalities are normalized to each other---from the brain extracted version of the data---in the subject's T1 space.  The T1 then guides mapping to the group cohort space as in \cite{Tustison2012}.  DWI is pre-processed to DTI using Camino \href{http://cmic.cs.ucl.ac.uk/camino/}{(link)} while cerebral blood flow is reconstructed with ANTs and R~tools \cite{Jain2012}. At the end of all processing, \textcolor{black}{{\em we have, for each subject, gray matter density, cortical thickness, DTI (and derived measures such as fractional anisotropy) as well as cerebral blood flow images}} on which to base prediction of pathology.  I did not include resting BOLD or spectroscopy in order to match the FTLDNI project scope although both are available, if needed.  
+ \href{http://www.picsl.upenn.edu/ANTS}{(click here for link)}\cite{Avants2011a,Avants2011,Murphy2011,Tustison2010,Tustison2011,Tustison2011a} via previously reported procedures validated as highly accurate \cite{Klein2009,Klein2010,Murphy2011,Avants2011}.  For both PENN and FTLDNI data, the processing constructs a multiple-modality cohort-specific template that captures the average shape and appearance of T1, DTI and perfusion images, as in \cite{Avants2011,Jain2012}.  We use the template to guide brain extraction for all modalities.  We estimate cortical thickness using DiReCT \cite{Das2009a} from the T1 image.  All modalities are normalized to each other---from the brain extracted version of the data---in the subject's T1 space.  The T1 then guides mapping to the group cohort space as in \cite{Tustison2012}.  DWI is pre-processed to DTI using Camino \cite{Cook2006ISMRM} \href{http://cmic.cs.ucl.ac.uk/camino/}{(link)} while cerebral blood flow is reconstructed with ANTs and R~tools \cite{Jain2012}. At the end of all processing, \textcolor{black}{{\em we have, for each subject, gray matter density, cortical thickness, DTI (and derived measures such as fractional anisotropy) as well as cerebral blood flow images}} on which to base prediction of pathology.  I did not include resting BOLD or spectroscopy in order to match the FTLDNI project scope although both are available, if needed.  
 
 
 Justification for each modality is described briefly: 
@@ -10,7 +10,8 @@ Justification for each modality is described briefly:
 
 \noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement that is both sensitive and specific in neurodegeneration \cite{} and which is associated with cognitive decline in autopsy-proven FTLD \cite{}.  % Mean diffusion (from DTI) may be related to cortical thickness in some cases \cite{}.  
 
-\noindent{\em Fractional anisotropy (FA) from DTI:}  A measurement of white matter integrity that may reveal the connectivity components of neurodegeneration \cite{}, potentially captures a different aspect of the disease process \cite{} and may differentiate tau and TDP-43 effects \cite{}.    
+% PAC - Many choices for citations in the first part; I've added suggestions
+\noindent{\em Fractional anisotropy (FA) from DTI:}  A measurement of white matter integrity that may reveal the connectivity components of neurodegeneration \cite{Zhang2009B}, potentially captures a different aspect of the disease process \cite{Englund2004JN} and may differentiate tau and TDP-43 effects \cite{McMillan2013JNNP}.    
 
 \noindent{\em Cerebral blood flow (CBF) from ASL:}  This functional quantitative measure (versus the relative values provided by BOLD) has the potential to reveal alterations in the brain that precede visible structural change and may indicate cortical reorganization under conditions such as cognitive reserve \cite{}.  
 CBF is a more repeatable functional measurement than BOLD \cite{}, may differentiate FTLD from Alzheimer's disease \cite{} and provides a unique view on the brain complementary to DTI and T1.  
@@ -354,11 +355,17 @@ implementation is multi-threaded, written in rigorous ITK coding style, and
 has been made publicly available through  ANTs complete with a unique user 
 interface design developed specifically for ANTs tools.  
 
+
 \subsubsection{DTI Processing with ANTs} 
 
-Phil --- see
-\href{www.ncbi.nlm.nih.gov/pubmed/23151955‎}{www.ncbi.nlm.nih.gov/pubmed/23151955}
-for content.
+%Phil --- see
+%\href{www.ncbi.nlm.nih.gov/pubmed/23151955‎}{www.ncbi.nlm.nih.gov/pubmed/23151955}
+% for content.
+The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using Camino \cite{Cook2006ISMRM} using an iterative weighted linear least squares algorithm \cite{Salvador2005HBM}.
+
+Each T1-weighted image is segmented into gray matter, white matter and CSF using N4 bias correction \cite{tustison2010} and Atropos segmentation \cite{avants2011a}. The white matter is used as a registration mask for alignment with the corresponding average DWI image. The DWI image is registered to the T1-weighted image using a transform composition derived by optimizing an initial rigid transformation followed by an optimized deformable (symmetric diffeomorphic using SyN \cite{avants2011}) transform. The rigid transform is found by optimizing the alignment between the average DWI and the masked white matter T1-weighted image of the same subject, to account for motion. The resulting rigid transform is used to initialize distortion correction using the deformable transform.
+
+The transformed DTI are warped to the template space by combining the intra-subject DWI to T1 warp with the warp previously defined to normalize the subject's T1 image to the template space. The correct anatomical orientation of the diffusion tensors is preserved by applying the preservation of principal direction method \cite{Alexander2001ITMI}, and scalar statistics such as FA and mean diffusivity are computed from the normalized diffusion tensors.
 
 \subsubsection{BOLD rsfMRI Processing for Network Analysis}
 
