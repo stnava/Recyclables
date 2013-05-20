@@ -180,12 +180,12 @@ interface where peak membership is ambiguous.
 Brain extraction using ANTs combines template building, high-performance
 brain image registration \citep{Avants2011}, and Atropos with topological refinements.  
 An optimal template for brain extraction is 
-generated offline using labeled brain data.  For example, in this work we use the LPBA40 data 
-for generating a brain extraction template and a corresponding brain probability mask which is
-available on the website associated with this submission. 
-
-  The warped template probability map is thresholded at 0.5 and the resulting mask is dilated
-with a radius of 2.  Atropos is used to generate an initial 3-tissue segmentation estimate within the mask
+generated offline using labeled brain data.  For example, we may use the LPBA40 data \cite{Klein2010}
+for generating a brain extraction template and a corresponding brain
+probability mask.  In this stage, we use a coarse and relatively fast
+registration to calculate a warp between the template whole-head image
+and the subject of interest.  The warped template probability map is
+thresholded at 0.5 and the resulting mask is dilated with a radius of 2.  Atropos is used to generate an initial 3-tissue segmentation estimate within the mask
 region.  Each of the three tissue masks undergo specific morphological operations which are then
 combined to create a brain extraction mask for use in the rest of the
 cortical thickness workflow. 
@@ -198,6 +198,15 @@ brain extraction algorithms including AFNI's \verb#3dIntracranial#
 registration/segmentation approach \citep{Avants2010a} performs at the
 top level alongside BrainSuite (tuned) and FreeSurfer.
 
+\subsubsection{Template-based Morphometry}
+We map the brain extracted anatomical image to the group template
+brain image using modality-appropriate strategies.  This final high-resolution mapping
+to a common coordinate system enables standard voxel-based or
+tensor-based morphometry where the Jacobian (or log-Jacobian) derives
+from the deformation gradient of the composite mapping between the
+individual and the group template brain.  Furthermore, this enables
+standardized coordinates to be reported for our multi-modality
+statistical analyses (described in section~\ref{sec:R}. 
 
 \subsubsection{DiReCT (aka KellySlater/KellyKapowski) Cortical Thickness Estimation}
 
