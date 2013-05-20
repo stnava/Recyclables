@@ -7,39 +7,56 @@ via previously reported procedures validated as highly accurate
 \cite{Klein2009,Klein2010,Murphy2011,Avants2011}.  In general, ANTs-based
 processing for multiple modalities is based on, first, defining a
 template to guide the population normalization and segmentation
-procedures \cite{avants2011a,avants2011}.  Traditionally, this
+procedures \cite{Avants2011a,Avants2011}.  Traditionally, this
 approach was used for single modalities but, more recently, is
 exetended for multiple modalities via multiple-modality cohort-specific templates
 that capture the average shape and appearance of T1, DTI and
-functional images, as in \cite{Kim2010,avants2011a,Jain2012,Tustison2012}.  We use the
+functional images, as in \cite{Kim2010,Avants2011a,Jain2012,Tustison2012}.  We use the
 template to guide brain extraction for all modalities and subsequent
-tissue or neuroanatomical parcellation \cite{}.  We estimate
-cortical thickness using DiReCT \cite{Das2009a} from the T1 image.
-All modalities are normalized to each other---from the brain extracted
-version of the data---in the subject's T1 space.  The T1 then guides
-mapping to the group cohort space as in \cite{Tustison2012}.  DWI is
-pre-processed to DTI using Camino \cite{Cook2006ISMRM}
-\href{http://cmic.cs.ucl.ac.uk/camino/}{(link)} while cerebral blood
-flow is reconstructed with ANTs and R~tools \cite{Jain2012}. At the
-end of all processing, \textcolor{black}{{\em we have, for each
-subject, gray matter density, cortical thickness, DTI (and derived
-measures such as fractional anisotropy) as well as cerebral blood flow
-images}} on which to base prediction of pathology.  I did not include
-resting BOLD or spectroscopy in order to match the FTLDNI project
-scope although both are available, if needed.
-
+tissue or neuroanatomical parcellation \cite{Avants2011a}.  
+This general procedure allows several complementary measurements to be
+extracted from neuroimaging including 
+cortical thickness via DiReCT \cite{Das2009a}, mean diffusion which
+may be sensitive to neuronal death \cite{}, fractional anisotropy,
+cerebral blood flow from ASL \cite{Jain2012} or graph connectivity metrics from ASL or
+BOLD \cite{}.  These measurements, taken together, yield a
+multispectral picture of brain health or disease that may have
+significant translational value for diagnostics \cite{McMillan2013a} and prognostics \cite{Yuh2013}.
 
 Justification for each modality is described briefly: 
 
-\noindent{\em Jacobian-based Volume from T1-weighted MRI:}  Used in Aim 2, we use the highest resolution image (here, T1) to obtain voxel-wise measurement of the subject structural volume relative to a group local template or relative to a baseline timepoint.  In the longitudinal case, Tensor-Based Morphometry (TBM), when performed symmetrically as in my prior work \cite{Yushkevich2010a,Das2012}, is highly accurate and provides detailed information on shape change over time \cite{Brambati2007998,Hua2011}.  
+\noindent{\em Jacobian-based Volume from T1-weighted MRI:}  T1 MRI is
+typically the highest resolution anatomical image routinely collected
+in both clinical and research MRI protocols.  Image registration
+methods are able to use T1 MRI to obtain voxel-wise measurement of the
+subject structural volume relative to a group local template or
+relative to a baseline timepoint.  These measurements are used in
+Tensor-Based Morphometry (TBM) which, when performed symmetrically as
+in my prior work \cite{Yushkevich2010a,Das2012}, is highly accurate
+and provides detailed information on shape change over time
+\cite{Brambati2007998,Hua2011,Kim2013} or across a population \cite{Kim2008,Massimo2009,Morgan2011,Hanson2010,Hanson2012}.
 
-\noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement that is both sensitive and specific in neurodegeneration \cite{} and which is associated with cognitive decline in autopsy-proven FTLD \cite{}.  % Mean diffusion (from DTI) may be related to cortical thickness in some cases \cite{}.  
+\noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement that is both sensitive and specific in neurodegeneration \cite{Stricker2012,Libon2012,McMillan2013} and which is associated with cognitive decline \cite{Dickerson2011,Avants2010}.  
 
-% PAC - Many choices for citations in the first part; I've added suggestions
 \noindent{\em Fractional anisotropy (FA) from DTI:}  A measurement of white matter integrity that may reveal the connectivity components of neurodegeneration \cite{Zhang2009B}, potentially captures a different aspect of the disease process \cite{Englund2004JN} and may differentiate tau and TDP-43 effects \cite{McMillan2013JNNP}.    
 
-\noindent{\em Cerebral blood flow (CBF) from ASL:}  This functional quantitative measure (versus the relative values provided by BOLD) has the potential to reveal alterations in the brain that precede visible structural change and may indicate cortical reorganization under conditions such as cognitive reserve \cite{}.  
-CBF is a more repeatable functional measurement than BOLD \cite{}, may differentiate FTLD from Alzheimer's disease \cite{} and provides a unique view on the brain complementary to DTI and T1.  
+\noindent{\em BOLD Network Analysis:} BOLD-based network analysis
+\cite{Spoormaker2010,Sanz-Arigita2010} has emerged as a powerful tool
+with specific value in both brain injury
+\cite{Mayer2011,Scheibel2012,Zhou2013}, the study of intervention
+strategies \cite{Roy2010,FeldsteinEwing2011} and measurement of pain
+\cite{Mayhew2013}.
+
+\noindent{\em Cerebral blood flow (CBF) from ASL:}  This functional
+quantitative measure (versus the relative values provided by BOLD) has
+the potential to reveal alterations in the brain due to injury
+\cite{Kim2008}, pain \cite{Howard2011}, pharmacological intervention \cite{Black2010,Jenkins2012} or that precede visible structural change and may
+indicate cortical reorganization \cite{Hayward2010}.  ASL-based CBF
+also accurately recapitulates PET imaging in Alzheimer's disease \cite{Chen2011,Mak2012}.
+CBF is a more repeatable functional measurement than BOLD
+\cite{Liu2007,Aguirre2012}, may be used in network analysis in lieu of
+or combination with 
+BOLD \cite{Duda2013} and provides a unique view on the brain complementary to DTI and T1.  
 
 \subsection{ANTs volumetric-based cortical thickness estimation pipeline}
 
@@ -179,7 +196,7 @@ data can be used to construct spatial priors for improving segmentation
 algorithms.
 The work of \cite{avants2010} explicitly models the geometric component of the 
 normalized space during optimization to produce such mean templates.  Coupling the intrinsic symmetry of 
-SyN pairwise registration \citep{avants2011} and an
+SyN pairwise registration \citep{Avants2011} and an
 optimized shape-based sharpening/averaging of the template appearance, Symmetric Group
 Normalization (SyGN) is a powerful framework for producing optimal population-specific
 templates \citep{avants2010}.
@@ -294,7 +311,7 @@ as input to the Atropos segmentation step (described in the next section).
 
 \subsubsection{Atropos 3-tissue segmentation}
 
-In \cite{avants2011a} we presented an open source $n$-tissue segmentation software tool
+In \cite{Avants2011a} we presented an open source $n$-tissue segmentation software tool
 (which we denote as ``Atropos'') attempting to distill 20+ years of active research in this area
 particularly some of its most seminal work (e.g. \cite{zhang2001,ashburner2005}). 
 Specification of prior probabilities includes spatially varying Markov Random Field modeling, 
@@ -333,7 +350,7 @@ interface where peak membership is ambiguous.
 \subsubsection{Brain extraction}
 
 Brain extraction using ANTs combines template building, high-performance
-brain image registration \citep{avants2011}, and Atropos with topological refinements.  
+brain image registration \citep{Avants2011}, and Atropos with topological refinements.  
 An optimal template for brain extraction is 
 generated offline using labeled brain data.  For example, in this work we use the LPBA40 data 
 for generating a brain extraction template and a corresponding brain probability mask which is
@@ -388,7 +405,7 @@ interface design developed specifically for ANTs tools.
 % for content.
 The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using Camino \cite{Cook2006ISMRM} using an iterative weighted linear least squares algorithm \cite{Salvador2005HBM}.
 
-Each T1-weighted image is segmented into gray matter, white matter and CSF using N4 bias correction \cite{tustison2010} and Atropos segmentation \cite{avants2011a}. The white matter is used as a registration mask for alignment with the corresponding average DWI image. The DWI image is registered to the T1-weighted image using a transform composition derived by optimizing an initial rigid transformation followed by an optimized deformable (symmetric diffeomorphic using SyN \cite{avants2011}) transform. The rigid transform is found by optimizing the alignment between the average DWI and the masked white matter T1-weighted image of the same subject, to account for motion. The resulting rigid transform is used to initialize distortion correction using the deformable transform.
+Each T1-weighted image is segmented into gray matter, white matter and CSF using N4 bias correction \cite{tustison2010} and Atropos segmentation \cite{Avants2011a}. The white matter is used as a registration mask for alignment with the corresponding average DWI image. The DWI image is registered to the T1-weighted image using a transform composition derived by optimizing an initial rigid transformation followed by an optimized deformable (symmetric diffeomorphic using SyN \cite{Avants2011}) transform. The rigid transform is found by optimizing the alignment between the average DWI and the masked white matter T1-weighted image of the same subject, to account for motion. The resulting rigid transform is used to initialize distortion correction using the deformable transform.
 
 The transformed DTI are warped to the template space by combining the intra-subject DWI to T1 warp with the warp previously defined to normalize the subject's T1 image to the template space. The correct anatomical orientation of the diffusion tensors is preserved by applying the preservation of principal direction method \cite{Alexander2001ITMI}, and scalar statistics such as FA and mean diffusivity are computed from the normalized diffusion tensors.
 
