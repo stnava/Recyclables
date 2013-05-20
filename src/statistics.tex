@@ -37,19 +37,26 @@ the necessary image processing core.
   across structural brain networks (n=1200, from public IXI, OASIS, NKI datasets).}\label{fig:cnx}
 \end{figure}
 
-Ben --- need R writeup for basic morphometry / correlation-type studies i.e. use of
-lm etc .... a model similar to: 
-\begin{align}
-\label{eq:eig2}
-  \text{Outcome} \approx \text{Eig}([ \Delta \text{Volume} ]) [
-  \beta_J ] + \\ \notag \text{Eig}([ \Delta \text{CBF} ]) [
-  \beta_{\Delta  C} ] + \text{Eig}([ \Delta \text{FA} ]) [
-  \beta_{\Delta  F} ] \notag + \\ \notag
-~\text{Age}~\beta_d + ~\text{Sex}~\beta_g,
-\end{align}
-% \textcolor{red}{Why isn't 'education' not already folded into 'Predicted Pathology' as presumably 'age' and 'gender' have?}
-where $\Delta$ represents a {\em linear} change measure and volumetric
-change over time is measured by log-Jacobian \cite{Rohlfing2006}.  
+When combined with the image processing utilities available in ANTs, R provides a convenient and powerful interface for performing common statistical analyses of imaging data.  In addition, R's standardized syntax minimizes the learning curve for performing a wide variety of different analyses.  The basic form of a statistical model in R is 
+\begin{equation}
+\text{Outcome} \approx \text{Predictor 1} + \text{Predictor 2} + \text{Predictor 3} + ...
+\label{eqn:r_syntax}
+\end{equation}
+Factor and continuous variable predictors can be combined seamlessly, and a wide variety of model types, including linear models with Gaussian noise, logistic, and Poisson models are available.  When performing a region-of-interest (ROI)-based analysis of the relationship between imaging data and cognition, one typically averages the voxel values within a given ROI and then tests the averaged values against a predictor.  In R syntax, this is written as 
+\begin{equation}
+\text{ROI value} \approx \text{cognition} + \text{nuisance demographic variables}. 
+\label{eqn:ROI}
+\end{equation}
+Given R's unified interface, conducting voxel-wise morphometric studies of cortical thickness or fractional anisotropy (FA) are similarly easy, with the only difference from Equation \ref{eqn:ROI} being that instead of the ROI value, the original voxel thickness or FA values are provided.  
 
-Should we do this voxel-wise or using the Eig function?
+ANTsR also enables more sophisticated functional studies.  ANTs provides utilities for all necessary preprocessing of time-series data, including motion correction, detrending, and noise reduction (CompCor).  Due to the ease of using factorial predictors in R, task-based fMRI images can be described using the same syntax: 
+\begin{equation}
+\text{Preprocessed fMRI data} \approx \text{Presence of task} + \text{nuisance regressors}.
+\label{eqn:fmri}
+\end{equation}
+The flexibility of R's linear model functionality also makes tasks that are not typically thought of as regression problems easy to perform.  For example, partial volume corrections in cerebral blood flow (CBF) measurements are often performed using correction equations that can be written as a linear model: 
+\begin{equation}
+\text{CBF} \approx \text{Percent gray matter} + \text{Percent white matter} + \text{Percent CSF}
+\end{equation}
+Taking the residual of this model (i.e., the portion of CBF that is not explained by the tissue distribution within a given voxel) is equivalent to performing a partial volume correction.  Once corrected for partial volume effect, the data can be processed using the same method as Equation \ref{eqn:fmri}. 
 
