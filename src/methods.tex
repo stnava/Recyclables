@@ -58,6 +58,9 @@ CBF is a more repeatable functional measurement than BOLD
 or combination with 
 BOLD \cite{Duda2013} and provides a unique view on the brain complementary to DTI and T1.  
 
+We now detail both general processing strategies and those that are
+specific to each modality.
+
 \subsection{ANTs volumetric-based cortical thickness estimation pipeline}
 
 The ANTs-based cortical thickness estimation workflow is illustrated 
@@ -72,108 +75,6 @@ in Figure \ref{fig:pipeline}.  The steps are as follows:
 \end{enumerate}
 Each component, including both software and data, is briefly detailed 
 below with the relevant references for additional information. 
-
-
-%We also note that each component is publicly available with all ANTs 
-%algorithms available as open source.%
-%\footnote{
-%http://www.picsl.upenn.edu/ANTS
-%}
-Additionally, the coordination of all the algorithmic components is
-encapsulated in the shell scripts \verb#antsCorticalThickness.sh# with
-subcomponents delegated to \verb#antsBrainExtraction.sh# 
-and \verb#antsAtroposN4.sh#.  This includes
-optimal parameters for each of the algorithmic components which has worked
-well for our processing and which are used to acquire the results 
-described in this work.
-
-%\lstset{frame = tb,
-%        framerule = 0.25pt,
-%        float,
-%        fontadjust,
-%        backgroundcolor={\color{listlightgray}},
-%        basicstyle = {\ttfamily\scriptsize},
-%        keywordstyle = {\ttfamily\color{listkeyword}\textbf},
-%        identifierstyle = {\ttfamily},
-%        commentstyle = {\ttfamily\color{listcomment}\textit},
-%        stringstyle = {\ttfamily},
-%        showstringspaces = false,
-%        showtabs = false,
-%        numbers = none,
-%        numbersep = 6pt,
-%        numberstyle={\ttfamily\color{listnumbers}},
-%        tabsize = 2,
-%        language=,
-%        floatplacement=!h,
-%        caption={\small \baselineskip 12pt DiReCT long command line menu which is invoked using the `{\ttfamily {-}{-}help}' option.  The short command line menu is obtained by typing `{\ttfamily {-}h}'}.,
-%        captionpos=b,
-%        label=listing:long
-%        }
-%\lstsetcpplong
-%\begin{lstlisting}
-%This script, apb.sh, performs T1 anatomical brain 
-%processing where the following steps are currently 
-%applied:
-%
-%  1. Brain extraction
-%  2. Brain 3-tissue segmentation
-%  3. Cortical thickness
-%  4. (Optional) registration to a template
-%
-%Usage:
-%
-%abp.sh -d ImageDimension
-%       -i T1Image.nii.gz
-%       -e BrainExtractionTemplate
-%       -m BrainExtractionProbabilityMask
-%       -l BrainParcellationTemplate
-%       -p BrainParcellationProbabilityMask
-%       <OPTARGS>
-%       -o OutputPrefix
-%
-%Example:
-%
-%abp.sh -d 3 
-%       -i t1.nii.gz 
-%       -e brainWithSkullTemplate.nii.gz 
-%       -m brainPrior.nii.gz 
-%       -l corticalLabels.nii.gz 
-%       -p corticalLabelPriors.nii.gz 
-%       -o output
-%
-%Compulsory arguments:
-%
-%     -d:  ImageDimension                        2 or 3 (for 2 or 3 dimensional single image)
-%     -a:  Anatomical T1 image                   typically T1.
-%     -e:  Brain extraction template             Anatomical template created using e.g. LPBA40 data set with
-%                                                buildtemplateparallel.sh in ANTs.
-%     -m:  Brain extraction probability mask     Brain probability mask created using e.g. LPBA40 data set which
-%                                                have brain masks defined, and warped to anatomical template and
-%                                                averaged resulting in a probability image.
-%     -l   Brain segmentation template           Anatomical template for brain segmentation.  E.g. NIREP template
-%                                                with labels.
-%     -p   Brain segmentationpriors              Label probability priors corresponding to the image specified
-%                                                with the -l option.  Specified using c-style formatting, e.g.
-%                                                -p labelsPriors\%02d.nii.gz.
-%     -o:  OutputPrefix                          The following images are created using the specified prefix:
-%                                                  * /Users/ntustison/Data//tmp13243//tmpN4Corrected.nii.gz
-%                                                  * /Users/ntustison/Data//tmp13243//tmpExtractedBrain.nii.gz
-%                                                  * /Users/ntustison/Data//tmp13243//tmp3TissueBrainSegmentation.nii.gz
-%                                                  * /Users/ntustison/Data//tmp13243//tmpCorticalThickness.nii.gz
-%                                                  * /Users/ntustison/Data//tmp13243//tmpSurfaceCurvature.nii.gz
-%
-%Optional arguments:
-%
-%     -s:  image file suffix                     Any of the standard ITK IO formats e.g. nrrd, nii.gz (default), mhd
-%     -t:  template for t1 registration
-%     -k:  keep temporary files                  Keep brain extraction/segmentation warps, etc (default = false).
-%     -w:  white matter label                    white matter label for segmentation (default = 3).
-%     -g:  gray matter label                     cortical gray matter label for segmentation (default = 2)
-%     -i:  max iterations for registration       ANTS registration max iterations (default = 50x100x20)
-%\end{lstlisting}
-
-
-
 \begin{figure*}
   \centering
   \includegraphics[width=170mm]{figs/Kapowski_pipeline2.pdf}
@@ -184,7 +85,6 @@ described in this work.
 \end{figure*}
 
 \subsubsection{Anatomical template construction}
-
 Normalizing images to a standard coordinate system
 reduces intersubject variability in population studies.  Various
 approaches exist for determining the normalized space such as the selection
@@ -200,78 +100,6 @@ SyN pairwise registration \citep{Avants2011} and an
 optimized shape-based sharpening/averaging of the template appearance, Symmetric Group
 Normalization (SyGN) is a powerful framework for producing optimal population-specific
 templates \citep{avants2010}.
-
-%One challenge with standard templates is that they may inadvertently bias one's results by enabling better normalization of subjects to which the template is more similar.  This issue is exacerbated when dealing with populations that have high variance (e.g. due to disease) and/or when one's normalization method is low-dimensional (not flexible enough to capture large shape differences). 
-
-%Population-specific templates alleviate some of
-%the issues with other template approaches by deriving a most representative image from the population
-%\citep{Good2001}.  Large deformation registration algorithms also reduce
-%this confound by being less sensitive to the deformation distance
-%between subject and target.  Some approaches combine both advantages,
-%for instance, the diffeomorphic approach of Joshi et al. employs the
-%SSD metric and a shape distance to bring the subject group of images
-%into alignment \citep{Joshi2004}.  Variants
-%include extension to multiple modalities \citep{Lorenzen2006} and small deformations
-%\citep{Geng2009}.  These approaches iteratively minimize group difference in ``congealing''
-%towards a representative image template \citep{Learned-Miller2006}.
-
-
-The ANTs implementation of this technique is currently available as a shell script, 
-\verb#buildtemplateparallel.sh# (a multivariate version is also available as
-\verb#antsMultivariateTemplateConstruction.sh#).  Both scripts are distributed as part of
- the ANTs repository.
-The latter script permits the construction of multimodal templates (e.g. 
-T1-weighted, T2-weighted, proton density MRI and fractional anisotropy).  
-Both scripts accommodate a variety of computational resources
-for facilitating template construction.  These computational resource possibilities include:
-\begin{itemize}
-  \item serial processing on a single workstation, 
-  \item parallelized processing on a single workstation with multiple cores using \verb#pexec#%
-  \footnote{http://www.gnu.org/software/pexec/pexec.1.html},
-  \item parallelized processing using Apple's XGrid technology%
-  \footnote{https://developer.apple.com/hardwaredrivers/hpc/xgrid\_intro.html}, 
-  \item parallelized processing using Sun Grid Engine for cluster-based systems%
-  \footnote{http://www.oracle.com/technetwork/oem/grid-engine-166852.html}, and 
-  \item parallelized processing using the Portable Batch System for cluster-based systems%
-  \footnote{http://www.pbsworks.com/}.
-\end{itemize}
-
-For this work, database-specific templates were used during cortical thickness pipeline
-processing for both brain extraction and brain segmentation steps.  Multivariate templates 
-were constructed from the multimodal data sets.  However, their usage was based on the 
-fact that they had been built previously for other work and not because they provide a 
-discernible advantage over univariate templates (i.e. T1-only) for the proposed workflow.
-
-%Given a set of representative images, 
-%$\{I_1, I_2, \ldots, I_M\}$, optimization involves finding the set of paired
-%diffeomorphic transformations, $\left\{\left(\phi^1_1, \phi^1_2\right), 
-%\left(\phi^2_1, \phi^2_2\right), \ldots, \left(\phi^M_1, \phi^M_2\right) \right\}$,
-%the optimal template appearance, $J^*$, and corresponding coordinate system, $\psi(\mathbf{x})$,
-%which minimize the following cost function:
-%\begin{align}
-%  \sum_{m=1}^M \left[
-%    D\left( \psi(\mathbf{x}), \phi^m_1(\mathbf{x}, 1) \right) + 
-%    \Pi \left( I_m\left(\phi^m_2(\mathbf{x}, 0.5) \right), J^*\left(\phi^m_1(\mathbf{x}, 0.5) \right) \right)
-%    \right]
-%\end{align}
-%where $D$ is the diffeomorphic shape distance, 
-%\begin{align}
-%  D\left(\phi(\mathbf{x}, 0), \phi(\mathbf{x}, 1)\right) = \int_{0}^1 \| v(\mathbf{x}, t) \|_L dt, 
-%\end{align}
-%dependent upon the choice of the linear operator, $L$, and
-%$v$ is the diffeomorphism-generating velocity field, 
-%\begin{align}
-%  v\left(\phi(\mathbf{x}, t), t \right) = \frac{d\phi(\mathbf{x}, t)}{dt},\,\,\, \phi(\mathbf{x}, 0) = \mathbf{x}.
-%\end{align}
-%$\Pi$ is th
-%e choice of similarity metric, often cross-correlation \citep{Avants2008a}, calculated in the 
-%virtual domain midway between each individual image and the current estimate of the template. 
-%
-%With initial assignment of $\left\{\left(\phi^m_1, \phi^m_2\right)\right\}$ and $\psi(\mathbf{x})$ 
-%to identity, iterative optimization
-%involves estimating the pairwise transformations, estimation of the optimal template appearance, and 
-%updating $\psi(\mathbf{x})$ by averaging the current estimate of $\left\{\phi_1^m\right\}$.  
-
 
 \subsubsection{N4 Bias field correction}
 
@@ -360,12 +188,7 @@ available on the website associated with this submission.
 with a radius of 2.  Atropos is used to generate an initial 3-tissue segmentation estimate within the mask
 region.  Each of the three tissue masks undergo specific morphological operations which are then
 combined to create a brain extraction mask for use in the rest of the
-cortical thickness workflow.  \textcolor{blue}{does there need to be a
-  bit more technical detail here?  while you can refer to the script,
-  why perform these operations?  there are numerous references, most
-  germane probably some recent stuff from J Prince ( i think ) and the
-  freesurfer watershed approach which came from ... i forget ... maybe
-  one of the french groups.}
+cortical thickness workflow. 
 
 A comparison using open access brain data with publicly available
 brain extraction algorithms including AFNI's \verb#3dIntracranial#
@@ -374,7 +197,6 @@ brain extraction algorithms including AFNI's \verb#3dIntracranial#
 \citep{dogdas2005} demonstrated that our combined
 registration/segmentation approach \citep{avants2010a} performs at the
 top level alongside BrainSuite (tuned) and FreeSurfer.
-\textcolor{blue}{ok you have the segonne ref here ... }
 
 
 \subsubsection{DiReCT (aka KellySlater/KellyKapowski) Cortical Thickness Estimation}
@@ -383,15 +205,6 @@ DiReCT was introduced
 in \cite{das2009} and made available in ANTs with the program \verb#KellySlater#.
 Since then several improvements have been made and incorporated into the program
 \verb#KellyKapowski#.%
-\footnote{
-Traditional academic discourse encountered in the published literature
-rarely contextualizes peculiarities such as algorithmic nomenclature.
-We briefly mention that
-this was the source of a rare disagreement between the first two authors
-based, as many disagreements are, on a simple misunderstanding and not an
-affronting existential statement concerning a certain favorite sitcom
-of the author's youth. 
-}
 Among the most significant advancements is that the more recent
 implementation is multi-threaded, written in rigorous ITK coding style, and 
 has been made publicly available through  ANTs complete with a unique user 
