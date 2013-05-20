@@ -216,7 +216,13 @@ interface design developed specifically for ANTs tools.
 %Phil --- see
 %\href{www.ncbi.nlm.nih.gov/pubmed/23151955‎}{www.ncbi.nlm.nih.gov/pubmed/23151955}
 % for content.
-The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using Camino \cite{Cook2006} using an iterative weighted linear least squares algorithm \cite{Salvador2005}.
+Diffusion MRI data consists of a series of images, one or more unweighted images (with no diffusion weighting) and multiple diffusion-weighted images (DWI) sensitized to diffusion along unique directions. The data from all of the images is used to fit a Gaussian model of diffusion in three dimensions, parameterized by the diffusion tensor (DT). The DT encodes complimentary information on the scale, anisotropy, and orientation of apparent diffusion in each voxel, which are sensitive to different aspects of the tissue microstructure, particularly white matter integrity and the local alignment of axon fiber bundles, which we can use to study global white matter connectivity. 
+
+Because of the relatively long imaging time and use of strong gradients, diffusion data is particularly sensitive to misalignment caused by distortion and subject motion. Co-registration of the image volumes is challenging because of limited spatial resolution and highly variable signal to noise ratio in the DWI. After pre-processing and diffusion tensor calculation, we must spatially normalize the diffusion tensors to template space for analysis. We accomplish this by first aligning the diffusion image with the subject's high-resolution T1-weighted image, correcting for any head motion and distortion introduced by differences in the MRI protocols between the T1-weighted image and the DWI. We then combine this intra-subject transformation with the transformation mapping the T1-weighted image to the template space. 
+
+We have developed an automated processing pipeline for diffusion imaging using the open source tools Camino \cite{Cook2006ISMRM} and ANTs, which provides pre-processing, brain extraction, diffusion tensor computation, and normalization to template space, as well as diagnostic images in the subject space to aid quality control, including fractional anisotropy, average corrected DWI, and noise variance.
+
+The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using an iterative weighted linear least squares algorithm \cite{Salvador2005HBM}.
 
 Each T1-weighted image is segmented into gray matter, white matter and CSF using N4 bias correction \cite{Tustison2010} and Atropos segmentation \cite{Avants2011a}. The white matter is used as a registration mask for alignment with the corresponding average DWI image. The DWI image is registered to the T1-weighted image using a transform composition derived by optimizing an initial rigid transformation followed by an optimized deformable (symmetric diffeomorphic using SyN \cite{Avants2011}) transform. The rigid transform is found by optimizing the alignment between the average DWI and the masked white matter T1-weighted image of the same subject, to account for motion. The resulting rigid transform is used to initialize distortion correction using the deformable transform.
 
@@ -249,11 +255,18 @@ a range of frequencies appropriate for the specific data type. An NxN
 correlation matrix is then calculated by finding the correlation
 between the filtered time-signals for each of the N labeled regions.
 
-Graph analysis. To each correlation matrix, we applied several different sparsity thresholds to binarize the edges, such that the bottom 50\% to 97.5\% of the 4050 edges were discarded and the remaining edges set to a common weight of 1. This approach maintains graph density across subjects and controls for inter-subject variation in base correlation levels (Liu et al., 2008; Power et al., 2011; Schwarz \& McGonigle, 2011; Braun et al., 2012; Liang et al., 2012).  On the binarized graphs, we computed six graph-wide metrics (transitivity, modularity, efficiency, clustering coefficient, characteristic path length, and small-worldness). These metrics measure efficiency of information transmission and community structure, and were calculated with the R package brainwaver (Achard et al., 2006). For each data type, frequency band, sparsity threshold, and metric, we calculated the intraclass correlation coefficient (ICC) between all subjects’ scores at T1 and T2. We used ICC(1,1) in the terminology of Shrout \& Fleiss (1979), a measure of absolute agreement. This procedure models the observations with a one-way analysis of variance (ANOVA) that incorporates the subject’s true score and an error term that collapses a number of sources of error. The ICC score is given by
-
-
- 
-where BMS denotes the between-subject mean squared error of the ANOVA, WMS denotes the within-subject mean square of the same ANOVA, and k denotes the number of observations (two in our case). Further detail on the method can be found in Shrout \& Fleiss (1979). We assessed the significance of each ICC by shuffling the labels of the T2 data 1000 times and comparing the observed ICC to the 1000 permuted ICCs. At each frequency band and metric, we then collapsed ICCs across sparsity thresholds and compared the mean ICC for each pair of data types via Wilcoxon rank-sum test. 
+Graph analysis. To each correlation matrix, sparsity thresholds are
+applied to binarize the edges, such that the bottom 50\% to 97.5\% of
+the edges are discarded and the remaining edges set to a common
+weight of 1.  This approach maintains graph density across subjects
+and controls for inter-subject variation in base correlation levels
+\cite{Liu2008, Power2011, Schwarz2011, Braun2012, Liang2012}. 
+On the binarized graphs, are variety of network measures may be
+computed including typically analyzed metrics such as: transitivity,
+modularity, efficiency, clustering coefficient, characteristic path
+length, and small-worldness. These metrics measure efficiency of
+information transmission and community structure, and are calculated
+with the R package brainwaver \cite{Achard2006}.
 
 \subsubsection{BOLD rsfMRI Processing for Network Analysis}
 
@@ -265,7 +278,7 @@ Jeff --- from MICCAI Paper ?
 
 \subsubsection{NIREP Data for Cortical Labelings}
 
-The Nonrigid Image Registration Evaluation Project (NIREP%
+The Nonrigid Image Registration Evaluation Project (NIREP)
 \footnote{
 http://www.nirep.org/
 }) 
