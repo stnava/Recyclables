@@ -1,7 +1,32 @@
 \section{Image Processing Methods}
 
-All MRI volumes will be processed, at PENN and UCSF, using Advanced Normalization Tools (ANTs)
- \href{http://www.picsl.upenn.edu/ANTS}{(click here for link)}\cite{Avants2011a,Avants2011,Murphy2011,Tustison2010,Tustison2011,Tustison2011a} via previously reported procedures validated as highly accurate \cite{Klein2009,Klein2010,Murphy2011,Avants2011}.  For both PENN and FTLDNI data, the processing constructs a multiple-modality cohort-specific template that captures the average shape and appearance of T1, DTI and perfusion images, as in \cite{Avants2011,Jain2012}.  We use the template to guide brain extraction for all modalities.  We estimate cortical thickness using DiReCT \cite{Das2009a} from the T1 image.  All modalities are normalized to each other---from the brain extracted version of the data---in the subject's T1 space.  The T1 then guides mapping to the group cohort space as in \cite{Tustison2012}.  DWI is pre-processed to DTI using Camino \cite{Cook2006ISMRM} \href{http://cmic.cs.ucl.ac.uk/camino/}{(link)} while cerebral blood flow is reconstructed with ANTs and R~tools \cite{Jain2012}. At the end of all processing, \textcolor{black}{{\em we have, for each subject, gray matter density, cortical thickness, DTI (and derived measures such as fractional anisotropy) as well as cerebral blood flow images}} on which to base prediction of pathology.  I did not include resting BOLD or spectroscopy in order to match the FTLDNI project scope although both are available, if needed.  
+All MRI volumes will be processed using Advanced Normalization Tools
+(ANTs) \href{http://www.picsl.upenn.edu/ANTS}{(click here for
+link)}\cite{Avants2011a,Avants2011,Murphy2011,Tustison2010,Tustison2011,Tustison2011a}
+via previously reported procedures validated as highly accurate
+\cite{Klein2009,Klein2010,Murphy2011,Avants2011}.  In general, ANTs-based
+processing for multiple modalities is based on, first, defining a
+template to guide the population normalization and segmentation
+procedures \cite{avants2011a,avants2011}.  Traditionally, this
+approach was used for single modalities but, more recently, is
+exetended for multiple modalities via multiple-modality cohort-specific templates
+that capture the average shape and appearance of T1, DTI and
+functional images, as in \cite{Kim2010,avants2011a,Jain2012,Tustison2012}.  We use the
+template to guide brain extraction for all modalities and subsequent
+tissue or neuroanatomical parcellation \cite{}.  We estimate
+cortical thickness using DiReCT \cite{Das2009a} from the T1 image.
+All modalities are normalized to each other---from the brain extracted
+version of the data---in the subject's T1 space.  The T1 then guides
+mapping to the group cohort space as in \cite{Tustison2012}.  DWI is
+pre-processed to DTI using Camino \cite{Cook2006ISMRM}
+\href{http://cmic.cs.ucl.ac.uk/camino/}{(link)} while cerebral blood
+flow is reconstructed with ANTs and R~tools \cite{Jain2012}. At the
+end of all processing, \textcolor{black}{{\em we have, for each
+subject, gray matter density, cortical thickness, DTI (and derived
+measures such as fractional anisotropy) as well as cerebral blood flow
+images}} on which to base prediction of pathology.  I did not include
+resting BOLD or spectroscopy in order to match the FTLDNI project
+scope although both are available, if needed.
 
 
 Justification for each modality is described briefly: 
