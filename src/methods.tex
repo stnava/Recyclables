@@ -34,11 +34,11 @@ relative to a baseline timepoint.  These measurements are used in
 Tensor-Based Morphometry (TBM) which, when performed symmetrically as
 in my prior work \cite{Yushkevich2010a,Das2012}, is highly accurate
 and provides detailed information on shape change over time
-\cite{Brambati2007998,Hua2011,Kim2013} or across a population \cite{Kim2008,Massimo2009,Morgan2011,Hanson2010,Hanson2012}.
+\cite{Brambati2007,Hua2011,Kim2013} or across a population \cite{Kim2008,Massimo2009,Morgan2011,Hanson2010,Hanson2012}.
 
 \noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement that is both sensitive and specific in neurodegeneration \cite{Stricker2012,Libon2012,McMillan2013} and which is associated with cognitive decline \cite{Dickerson2011,Avants2010}.  
 
-\noindent{\em Fractional anisotropy (FA) from DTI:}  A measurement of white matter integrity that may reveal the connectivity components of neurodegeneration \cite{Zhang2009B}, potentially captures a different aspect of the disease process \cite{Englund2004JN} and may differentiate tau and TDP-43 effects \cite{McMillan2013JNNP}.    
+\noindent{\em Fractional anisotropy (FA) from DTI:}  A measurement of white matter integrity that may reveal the connectivity components of neurodegeneration \cite{Zhang2009}, potentially captures a different aspect of the disease process \cite{Englund2004} and may differentiate tau and TDP-43 effects \cite{McMillan2013b}.    
 
 \noindent{\em BOLD Network Analysis:} BOLD-based network analysis
 \cite{Spoormaker2010,Sanz-Arigita2010} has emerged as a powerful tool
@@ -110,7 +110,7 @@ as the Alzheimer's Disease Neuroimaging Initiative (ADNI), employ
 perhaps the most widely used bias correction algorithm, N3 \cite{sled1998}, 
 as part of their standard protocol \citep{boyes2008}.
 
-In \cite{tustison2010}, we introduced an improvement of N3, denoted as
+In \cite{Tustison2010}, we introduced an improvement of N3, denoted as
 ``N4'', which demonstrates a significant increase in performance and convergence behavior
 on a variety of data.  This improvement is a result of an enhanced 
 fitting routine (which includes multi-resolution capabilities) and a modified optimization 
@@ -216,11 +216,11 @@ interface design developed specifically for ANTs tools.
 %Phil --- see
 %\href{www.ncbi.nlm.nih.gov/pubmed/23151955‎}{www.ncbi.nlm.nih.gov/pubmed/23151955}
 % for content.
-The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using Camino \cite{Cook2006ISMRM} using an iterative weighted linear least squares algorithm \cite{Salvador2005HBM}.
+The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using Camino \cite{Cook2006} using an iterative weighted linear least squares algorithm \cite{Salvador2005}.
 
 Each T1-weighted image is segmented into gray matter, white matter and CSF using N4 bias correction \cite{tustison2010} and Atropos segmentation \cite{Avants2011a}. The white matter is used as a registration mask for alignment with the corresponding average DWI image. The DWI image is registered to the T1-weighted image using a transform composition derived by optimizing an initial rigid transformation followed by an optimized deformable (symmetric diffeomorphic using SyN \cite{Avants2011}) transform. The rigid transform is found by optimizing the alignment between the average DWI and the masked white matter T1-weighted image of the same subject, to account for motion. The resulting rigid transform is used to initialize distortion correction using the deformable transform.
 
-The transformed DTI are warped to the template space by combining the intra-subject DWI to T1 warp with the warp previously defined to normalize the subject's T1 image to the template space. The correct anatomical orientation of the diffusion tensors is preserved by applying the preservation of principal direction method \cite{Alexander2001ITMI}, and scalar statistics such as FA and mean diffusivity are computed from the normalized diffusion tensors.
+The transformed DTI are warped to the template space by combining the intra-subject DWI to T1 warp with the warp previously defined to normalize the subject's T1 image to the template space. The correct anatomical orientation of the diffusion tensors is preserved by applying the preservation of principal direction method \cite{Alexander2001}, and scalar statistics such as FA and mean diffusivity are computed from the normalized diffusion tensors.
 
 
 \subsubsection{Functional Image Processing}
