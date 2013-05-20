@@ -255,11 +255,18 @@ a range of frequencies appropriate for the specific data type. An NxN
 correlation matrix is then calculated by finding the correlation
 between the filtered time-signals for each of the N labeled regions.
 
-Graph analysis. To each correlation matrix, we applied several different sparsity thresholds to binarize the edges, such that the bottom 50\% to 97.5\% of the 4050 edges were discarded and the remaining edges set to a common weight of 1. This approach maintains graph density across subjects and controls for inter-subject variation in base correlation levels (Liu et al., 2008; Power et al., 2011; Schwarz \& McGonigle, 2011; Braun et al., 2012; Liang et al., 2012).  On the binarized graphs, we computed six graph-wide metrics (transitivity, modularity, efficiency, clustering coefficient, characteristic path length, and small-worldness). These metrics measure efficiency of information transmission and community structure, and were calculated with the R package brainwaver (Achard et al., 2006). For each data type, frequency band, sparsity threshold, and metric, we calculated the intraclass correlation coefficient (ICC) between all subjects’ scores at T1 and T2. We used ICC(1,1) in the terminology of Shrout \& Fleiss (1979), a measure of absolute agreement. This procedure models the observations with a one-way analysis of variance (ANOVA) that incorporates the subject’s true score and an error term that collapses a number of sources of error. The ICC score is given by
-
-
- 
-where BMS denotes the between-subject mean squared error of the ANOVA, WMS denotes the within-subject mean square of the same ANOVA, and k denotes the number of observations (two in our case). Further detail on the method can be found in Shrout \& Fleiss (1979). We assessed the significance of each ICC by shuffling the labels of the T2 data 1000 times and comparing the observed ICC to the 1000 permuted ICCs. At each frequency band and metric, we then collapsed ICCs across sparsity thresholds and compared the mean ICC for each pair of data types via Wilcoxon rank-sum test. 
+Graph analysis. To each correlation matrix, sparsity thresholds are
+applied to binarize the edges, such that the bottom 50\% to 97.5\% of
+the edges are discarded and the remaining edges set to a common
+weight of 1.  This approach maintains graph density across subjects
+and controls for inter-subject variation in base correlation levels
+\cite{Liu2008, Power2011, Schwarz2011, Braun2012, Liang2012}. 
+On the binarized graphs, are variety of network measures may be
+computed including typically analyzed metrics such as: transitivity,
+modularity, efficiency, clustering coefficient, characteristic path
+length, and small-worldness. These metrics measure efficiency of
+information transmission and community structure, and are calculated
+with the R package brainwaver \cite{Achardet al}.
 
 \subsubsection{BOLD rsfMRI Processing for Network Analysis}
 
@@ -271,7 +278,7 @@ Jeff --- from MICCAI Paper ?
 
 \subsubsection{NIREP Data for Cortical Labelings}
 
-The Nonrigid Image Registration Evaluation Project (NIREP%
+The Nonrigid Image Registration Evaluation Project (NIREP)
 \footnote{
 http://www.nirep.org/
 }) 
