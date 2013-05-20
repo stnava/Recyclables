@@ -77,7 +77,7 @@ Each component, including both software and data, is briefly detailed
 below with the relevant references for additional information. 
 \begin{figure*}
   \centering
-  \includegraphics[width=170mm]{figs/Kapowski_pipeline2.pdf}
+  \includegraphics[width=0.9\textwidth]{figs/Kapowski_pipeline2.pdf}
   \caption{Illustration of the main components of the ANTs processing 
   workflow containing all elements for determining cortical thickness. 
   Not shown is the optional subject to template registration.}
@@ -309,7 +309,9 @@ untagged BOLD signal at each time point is calculated using sinc
 subtraction \cite{Liu2005}.  Subsequently, CBF is
 quantified using the appropriate acquisition parameters and the
 methods of Wang, et al. \cite{Wang2003}. A mean CBF image is created by
-averaging over the CBF time-signal. 
+averaging over the CBF time-signal. Depending upon processing needs, functional images are
+mapped to the T1 individual brain.  Mapping to a group template may
+then occur through previously computed coordinate transformations.
 
 Network analysis may be performed with any of three types of input
 time series data:  standard BOLD, ASL-BOLD or ASL-CBF.  The ASL-CBF
@@ -345,7 +347,7 @@ with the R package brainwaver \cite{Achard2006}.
 
 \begin{figure}
   \centering
-  \includegraphics[width=90mm]{figs/template50_60.pdf}
+  \includegraphics[width=0.8\textwidth]{figs/template50_60.pdf}
   \caption{Sample multivariate template constructed from a subset of the IXI data (female, age 50--60).  Axial slices of five of the 37 total subjects from this cohort are shown. }
   \label{fig:template}
 \end{figure}
