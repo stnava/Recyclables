@@ -15,19 +15,9 @@ functional images, as in \cite{Kim2010,Avants2011a,Jain2012,Tustison2012}.  We u
 template to guide brain extraction for all modalities and subsequent
 tissue or neuroanatomical parcellation \cite{Avants2011a}.  
 This general procedure allows several complementary measurements to be
-extracted from neuroimaging including 
-cortical thickness via DiReCT \cite{Das2009a}, mean diffusion which
-may be sensitive to neuronal death, fractional anisotropy,
-cerebral blood flow from ASL \cite{Jain2012} or graph connectivity metrics from ASL \cite{Jann2013} or
-BOLD \cite{Mayhew2013}.  These measurements, taken together, yield a
-multispectral picture of brain health or disease that may have
-significant translational value for diagnostics \cite{McMillan2013a} and prognostics \cite{Yuh2013}.
+extracted from neuroimaging including: 
 
-Justification for each modality is described briefly: 
-
-\noindent{\em Jacobian-based Volume from T1-weighted MRI:}  T1 MRI is
-typically the highest resolution anatomical image routinely collected
-in both clinical and research MRI protocols.  Image registration
+\noindent{\em Jacobian-based Volume from T1-weighted MRI:}  Image registration
 methods are able to use T1 MRI to obtain voxel-wise measurement of the
 subject structural volume relative to a group local template or
 relative to a baseline timepoint.  These measurements are used in
@@ -36,23 +26,10 @@ in my prior work \cite{Yushkevich2010a,Das2012}, is highly accurate
 and provides detailed information on shape change over time
 \cite{Brambati2007,Hua2011,Kim2013} or across a population \cite{Kim2008,Massimo2009,Morgan2011,Hanson2010,Hanson2012}.
 
-\noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement that is both sensitive and specific in neurodegeneration \cite{Stricker2012,Libon2012,McMillan2013} and which is associated with cognitive decline \cite{Dickerson2011,Avants2010}.  Quantitative cortical measures have been demonstrated in conditional 
-abnormalities such as 
-Huntington's disease \citep{rosas2002,rosas2005,selemon2004}, bipolar disorder \cite{lyoo2006}, Alzheimer's disease and frontotemporal
-dementia \citep{du2007,dickerson2009}, Parkinson's disease \citep{jubault2011}, Williams syndrome \cite{thompson2005},
-multiple sclerosis \citep{ramasamy2009}, autism \citep{chung2005,hardan2006},
-migraines \citep{dasilva2007}, chronic smoking \citep{kuhn2010}, alcoholism \citep{fortier2011},
-cocaine addiction \citep{makris2008}, Tourette syndrome in children \citep{sowell2008},
-scoliosis in
-female adolescents \citep{wang2012}, obsessive compulsive
-disorder \citep{shin2007}, obesity \citep{raji2010}, and heritable \citep{peterson2009}
-and elderly \citep{ballmaier2004} depression.  Cortical thickness also
-varies normally as a function of age \citep{kochunov2011},
-gender \citep{luders2006a}, untreated transsexuality \citep{zubiaurre-elorza2012},  handedness
-\citep{luders2006,amunts2007}, intelligence \citep{shaw2006}, athletic
-ability \citep{wei2011}, musical ability \citep{bermudez2009,foster2010}, 
-tendency toward criminality \citep{raine2011}, and Tetris-playing
-ability in female adolescents \citep{haier2009}. 
+\noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement
+that is both sensitive and specific in neurodegeneration
+\cite{Stricker2012,Libon2012,McMillan2013} and which is associated
+with cognitive decline \cite{Dickerson2011,Avants2010}.  
 
 \noindent{\em Measurements derived from DTI:}  Fractional anisotropy
 measurement of white matter integrity that may reveal the connectivity
@@ -70,7 +47,12 @@ with specific value in both brain injury
 strategies \cite{Roy2010,FeldsteinEwing2011} and measurement of pain
 \cite{Mayhew2013}.  ASL may also be employed in this manner
 \cite{Jann2013} and has been processed with ANTs tools and canonical
-correlation analysis \cite{Duda2013}.
+correlation analysis \cite{Duda2013}.  We propose network measures
+based on constant graph density across subjects
+which controls for inter-subject variation in base correlation levels
+\cite{Liu2008, Power2011, Schwarz2011, Braun2012, Liang2012}. 
+On the binarized graphs, we compute betweenness, small-worldness and
+related metrics. 
 
 \noindent{\em Cerebral blood flow (CBF) from ASL:}  This functional
 quantitative measure (versus the relative values provided by BOLD) has
@@ -82,302 +64,4 @@ CBF is a more repeatable functional measurement than BOLD
 \cite{Liu2007,Aguirre2012}, may be used in network analysis in lieu of
 or combination with 
 BOLD \cite{Duda2013} and provides a unique view on the brain complementary to DTI and T1.  
-
-We now detail both general processing strategies and those that are
-specific to each modality.
-
-\subsection{ANTs volumetric-based cortical thickness estimation pipeline}
-
-The ANTs-based cortical thickness estimation workflow is illustrated 
-in Figure \ref{fig:pipeline}.  The steps are as follows:
-\begin{enumerate}
-  \item initial N4 bias correction on input anatomical MRI,
-  \item brain extraction using a hybrid segmentation/template-based strategy,
-  \item alternation between prior-based segmentation and white matter posterior
-        probability weighted bias correction,
-  \item DiReCT-based cortical thickness estimation, and
-  \item optional normalization to specified template.
-\end{enumerate}
-Each component, including both software and data, is briefly detailed 
-below with the relevant references for additional information. 
-\begin{figure*}
-  \centering
-  \includegraphics[width=0.9\textwidth]{figs/Kapowski_pipeline2.pdf}
-  \caption{Illustration of the main components of the ANTs processing 
-  workflow containing all elements for determining cortical thickness. 
-  Not shown is the optional subject to template registration.}
-  \label{fig:pipeline}
-\end{figure*}
-
-\subsubsection{Anatomical template construction}
-Normalizing images to a standard coordinate system
-reduces intersubject variability in population studies.  Various
-approaches exist for determining the normalized space such as the selection
-of a pre-existing template based on a single subject, e.g. the Talairach
-atlas \citep{Talairach1988}, or a publicly available averaged group of
-subjects, e.g. the MNI \citep{Collins1994} or ICBM \citep{Mazziotta1995}
-templates.  Additionally, mean templates constructed from labeled
-data can be used to construct spatial priors for improving segmentation
-algorithms.
-The work of \cite{Avants2010} explicitly models the geometric component of the 
-normalized space during optimization to produce such mean templates.  Coupling the intrinsic symmetry of 
-SyN pairwise registration \citep{Avants2011} and an
-optimized shape-based sharpening/averaging of the template appearance, Symmetric Group
-Normalization (SyGN) is a powerful framework for producing optimal population-specific
-templates \citep{Avants2010}.
-
-\subsubsection{N4 Bias field correction}
-
-Critical to quantitative processing of MRI is the minimization of
-field inhomogeneity effects which causes artificial low frequency 
-intensity variation across the image.  Large-scale studies, such
-as the Alzheimer's Disease Neuroimaging Initiative (ADNI), employ
-perhaps the most widely used bias correction algorithm, N3 \cite{sled1998}, 
-as part of their standard protocol \citep{boyes2008}.
-
-In \cite{Tustison2010}, we introduced an improvement of N3, denoted as
-``N4'', which demonstrates a significant increase in performance and convergence behavior
-on a variety of data.  This improvement is a result of an enhanced 
-fitting routine (which includes multi-resolution capabilities) and a modified optimization 
-formulation.  For our workflow, the additional possibility of specifying
-a weighted mask in N4 permits the use of a ``pure tissue'' probability map 
-(described below)
-calculated during the segmentation pipeline for further improvement of 
-bias field estimation.  In addition to its public availability 
-through ANTs and the Insight Toolkit, it has also been included in
-the popular open source Slicer software package for visualization and medical
-image computing \cite{fedorov2011}.
-
-N4 is used in two places during the individual subject processing (cf. Figure
-\ref{fig:pipeline}).  Following conversion of the raw dicom T1-weighted image
-to Nifti format using our related \verb#Neuropipedream# set of raw image conversion
-and organization tools%
-\footnote{
-http://sourceforge.net/projects/neuropipedream/
-}, N4 is used to generate an initial bias corrected image for use in
-brain extraction.  The input mask is created by adaptively thresholding 
-the background from the foreground using Otsu's algorithm \cite{otsu1979}.
-Following brain extraction, three-tissue segmentation involves iterating
-between bias field correction using the current pure tissue 
-probability map as a weight mask and then using that bias corrected image
-as input to the Atropos segmentation step (described in the next section). 
-
-\subsubsection{Atropos 3-tissue segmentation}
-
-In \cite{Avants2011a} we presented an open source $n$-tissue segmentation software tool
-(which we denote as ``Atropos'') attempting to distill 20+ years of active research in this area
-particularly some of its most seminal work (e.g. \cite{zhang2001,ashburner2005}). 
-Specification of prior probabilities includes spatially varying Markov Random Field modeling, 
-prior label maps, and prior probability maps typically derived from our template building 
-process.  Additional
-capabilities include handling of multivariate data, 
-partial volume modeling \cite{shattuck2001}, a memory-minimization mode,
-label propagation, a plug-n-play architecture for incorporation of novel likelihood models
-which includes both parametric and non-parametric models for both scalar and tensorial
-images, and alternative posterior formulations for different segmentation tasks.
-
-Due to the important interplay between segmentation and bias correction,
-we perform multiple N4 $\Leftrightarrow$ Atropos iterations.
-In order to better integrate Atropos and N4, we use  
-a pure tissue probability weight mask generated from the 
-posterior probabilities generated from the segmentation 
-process.  Given $N$ labels and the corresponding $N$
-posterior probability maps $\{ P_1, \ldots, P_N\}$ produced
-during the segmentation process, the N4 weight mask is 
-created at each N4 $\Leftrightarrow$ Atropos iteration from
-\begin{align}
-  P_{pure\,\,tissue}(\mathbf{x}) = \sum_{i=1}^N P_i(\mathbf{x}) \prod_{j=1, j \neq i}^N \left( 1 - P_j(\mathbf{x}) \right).
-\end{align}
-One of the key insights of the original N3 algorithm is the
-observation that inhomogeneities cause the intensity values of
-pure tissue peaks to spread in the intensity histogram as though
-convolved with a Gaussian.  A core contribution of N3 is the
-proposed corrective of deconvolving the intensity histogram to 
-accentuate the tissue peaks coupled with a spatial smoothing 
-constraint. The pure tissue probability mask
-weights more heavily the voxels corresponding to pure tissue 
-types (as determined by the segmentation) during the deconvolution process 
-while minimizing the contribution of regions such as the gray/white matter 
-interface where peak membership is ambiguous. 
-
-\subsubsection{Brain extraction}
-
-Brain extraction using ANTs combines template building, high-performance
-brain image registration \citep{Avants2011}, and Atropos with topological refinements.  
-An optimal template for brain extraction is 
-generated offline using labeled brain data.  For example, we may use the LPBA40 data \cite{Klein2010}
-for generating a brain extraction template and a corresponding brain
-probability mask.  In this stage, we use a coarse and relatively fast
-registration to calculate a warp between the template whole-head image
-and the subject of interest.  The warped template probability map is
-thresholded at 0.5 and the resulting mask is dilated with a radius of 2.  Atropos is used to generate an initial 3-tissue segmentation estimate within the mask
-region.  Each of the three tissue masks undergo specific morphological operations which are then
-combined to create a brain extraction mask for use in the rest of the
-cortical thickness workflow. 
-
-A comparison using open access brain data with publicly available
-brain extraction algorithms including AFNI's \verb#3dIntracranial#
-\citep{ward1999}, FSL's \verb#BET2# \citep{smith2002}, Freesurfer's
-\verb#mri_watershed# \citep{segonne2004}, and BrainSuite
-\citep{dogdas2005} demonstrated that our combined
-registration/segmentation approach \citep{Avants2010a} performs at the
-top level alongside BrainSuite (tuned) and FreeSurfer.
-
-\subsubsection{Template-based Morphometry}
-We map the brain extracted anatomical image to the group template
-brain image using modality-appropriate strategies.  This final high-resolution mapping
-to a common coordinate system enables standard voxel-based or
-tensor-based morphometry where the Jacobian (or log-Jacobian) derives
-from the deformation gradient of the composite mapping between the
-individual and the group template brain.  Furthermore, this enables
-standardized coordinates to be reported for our multi-modality
-statistical analyses (described in section~\ref{sec:R}. 
-
-\subsubsection{DiReCT (aka KellySlater/KellyKapowski) Cortical Thickness Estimation}
-
-DiReCT was introduced 
-in \cite{das2009} and made available in ANTs with the program \verb#KellySlater#.
-Since then several improvements have been made and incorporated into the program
-\verb#KellyKapowski#.  Among the most significant advancements is that the more recent
-implementation is multi-threaded, written in rigorous ITK coding style, and 
-has been made publicly available through  ANTs complete with a unique user 
-interface design developed specifically for ANTs tools.  
-
-
-\subsubsection{Multi-atlas Anatomical Labeling with ANTs}
-
-Cortical label propagation to each individual subject for all data
-sets described below is performed using the PICSL multi-atlas joint
-label fusion algorithm described in \cite{wang2013} which recently led
-an international competition in multi-atlas segmentation at the MICCAI
-2012 Grand Challenge on Multi-Atlas Labeling.  The implementation is
-distributed with the ANTs toolkit (program {\em jointfusion}).  Valid
-input may include any public population data with anatomical labeling,
-e.g. the Nonrigid Image Registration Evaluation Project (NIREP)
-label set \citep{christensen2006}.
-The initial data set introduced into the project consists of 
-16 (8 male and 8 female) high resolution skull-stripped brain 
-data with 32 cortical labels (cf. Table \ref{table:nirep_labels}) manually drawn using a 
-published protocol.
-
-%Given the gray matter labels, the white matter and CSF were identified 
-%for each of the 16 subjects using Atropos.  Similar to the LPBA40
-%data set, a NIREP template was created from all 16 subjects and each of the
-%warped labels were used to create probabilistic estimates of the 
-%labeled region boundaries. These probability maps were used as 
-%spatial prior probabilities during the 3-tissue segmentation component
-%of the pipeline.  Using SyN, the NIREP template is registered to the
-%extracted individual subject brain which is followed by a warping of the 
-%NIREP priors to the space of the individual subject.  The initial warped 
-%white matter probability map is used as the weighted confidence mask 
-%in the follow-up bias correction step.
-
-\begin{table}
-\centering
-\begin{tabular*}{0.475\textwidth}{@{\extracolsep{\fill}} l l}
-\toprule
-  1) L occipital lobe & 2) R occipital lobe \\
-  3) L cingulate gyrus & 4) R cingulate gyrus \\
-  5) L insula gyrus & 6) R insula gyrus \\
-  7) L temporal lobe & 8) R temporal lobe \\
-  9) L superior temporal gyr. & 10) R superior temporal gyr. \\
-  11) L infero temporal region & 12) R infero temporal region \\
-  13) L parahippocampal gyr. & 14) R parahippocampal gyr. \\
-  15) L frontal pole & 16) R frontal pole \\
-  17) L superior frontal gyrus & 18) R superior frontal gyrus \\
-  19) L middle frontal gyrus & 20) R middle frontal gyrus \\
-  21) L inferior gyrus & 22) R inferior gyrus \\
-  23) L orbital frontal gyrus & 24) R orbital frontal gyrus \\
-  25) L precentral gyrus & 26) R precentral gyrus \\
-  27) L superior parietal lobule & 28) R superior parietal lobule \\
-  29) L inferior parietal lobule & 30) R inferior parietal lobule \\
-  31) L postcentral gyrus & 32)   R postcentral gyrus \\  
-\bottomrule
-\end{tabular*}
-\caption{The 32 cortical NIREP labels.}
-\label{table:nirep_labels}
-\end{table}
-
-
-
-\subsubsection{DTI Processing with ANTs} 
-
-%Phil --- see
-%\href{www.ncbi.nlm.nih.gov/pubmed/23151955‎}{www.ncbi.nlm.nih.gov/pubmed/23151955}
-% for content.
-Diffusion MRI data consists of a series of images, one or more unweighted images (with no diffusion weighting) and multiple diffusion-weighted images (DWI) sensitized to diffusion along unique directions. The data from all of the images is used to fit a Gaussian model of diffusion in three dimensions, parameterized by the diffusion tensor (DT). The DT encodes complimentary information on the scale, anisotropy, and orientation of apparent diffusion in each voxel, which are sensitive to different aspects of the tissue microstructure, particularly white matter integrity and the local alignment of axon fiber bundles, which we can use to study global white matter connectivity. 
-
-Because of the relatively long imaging time and use of strong gradients, diffusion data is particularly sensitive to misalignment caused by distortion and subject motion. Co-registration of the image volumes is challenging because of limited spatial resolution and highly variable signal to noise ratio in the DWI. After pre-processing and diffusion tensor calculation, we must spatially normalize the diffusion tensors to template space for analysis. We accomplish this by first aligning the diffusion image with the subject's high-resolution T1-weighted image, correcting for any head motion and distortion introduced by differences in the MRI protocols between the T1-weighted image and the DWI. We then combine this intra-subject transformation with the transformation mapping the T1-weighted image to the template space. 
-
-We have developed an automated processing pipeline for diffusion imaging using the open source tools Camino \cite{Cook2006} and ANTs, which provides pre-processing, brain extraction, diffusion tensor computation, and normalization to template space, as well as diagnostic images in the subject space to aid quality control, including fractional anisotropy, average corrected DWI, and noise variance.
-
-The first unweighted image in the diffusion sequence is used as the reference image for motion and distortion correction. The remaining unweighted images are rigidly aligned to the reference image and averaged; this average image is used as the reference image for affine correction of the diffusion-weighted images (DWI) for motion and distortion caused by the diffusion weighting gradients. A brain mask is computed by aligning the average DWI to a template, and warping the template brain mask into the subject space. Processing then continues on the brain-extracted image. Diffusion tensors are calculated using an iterative weighted linear least squares algorithm \cite{Salvador2005}.
-
-Each T1-weighted image is segmented into gray matter, white matter and CSF using N4 bias correction \cite{Tustison2010} and Atropos segmentation \cite{Avants2011a}. The white matter is used as a registration mask for alignment with the corresponding average DWI image. The DWI image is registered to the T1-weighted image using a transform composition derived by optimizing an initial rigid transformation followed by an optimized deformable (symmetric diffeomorphic using SyN \cite{Avants2011}) transform. The rigid transform is found by optimizing the alignment between the average DWI and the masked white matter T1-weighted image of the same subject, to account for motion. The resulting rigid transform is used to initialize distortion correction using the deformable transform.
-
-The transformed DTI are warped to the template space by combining the intra-subject DWI to T1 warp with the warp previously defined to normalize the subject's T1 image to the template space. The correct anatomical orientation of the diffusion tensors is preserved by applying the preservation of principal direction method \cite{Alexander2001}, and scalar statistics such as FA and mean diffusivity are computed from the normalized diffusion tensors.
-
-
-\subsubsection{Functional Image Processing}
-
-Motion correction is performed by the 
-antsMotionCorr program in ANTs which uses a mutual information similarity metric and
-a nonlinear conjugate gradient optimizer to maximize the Affine or
-Rigid similarity between each image in a time series and a sequence specific reference
-image. The reference image for each modality is: BOLD---the average image from the full time
-series; CASL and pCASL---the average control labeled image; PASL---the
-acquired M0 image.  A brain mask is computed by aligning the reference
-motion correction image to a sequence-specific 
-template and warping the template brain mask into the subject
-space. For ASL-based images, the difference between the tagged and
-untagged BOLD signal at each time point is calculated using sinc
-subtraction \cite{Liu2005}.  Subsequently, CBF is
-quantified using the appropriate acquisition parameters and the
-methods of Wang, et al. \cite{Wang2003}. A mean CBF image is created by
-averaging over the CBF time-signal. Depending upon processing needs, functional images are
-mapped to the T1 individual brain.  Mapping to a group template may
-then occur through previously computed coordinate transformations.
-
-Network analysis may be performed with any of three types of input
-time series data:  standard BOLD, ASL-BOLD or ASL-CBF.  The ASL-CBF
-signal may have advantages over BOLD particularly in the orbitofronal
-and anterior temporal regions where standard BOLD signal dropout
-occurs \cite{Jann2013,Orosz2012}.  For each time series type we perform:
-\newline
-\noindent{\em Graph construction:} Cortical labels such as the Automated Anatomical
-Labeling (AAL) atlas \cite{Tzourio-Mazoyer2002} are mapped from
-the template space into the subject space via the same method used to
-generate subject space brain masks described above. For each cortical
-and subcortical label, a region-averaged time-signal is
-calculated. Each time-series is then bandpass filtered using the
-Christiano-Fitzgerald filtering \cite{Christiano2003}, as
-implemented by the R function cffilter in package mFilter, to examine
-a range of frequencies appropriate for the specific data type. An N$\times$N
-correlation matrix is then calculated by finding the correlation
-between the filtered time-signals for each of the N labeled regions.
-Recent work based on ANTs tools for canonical correlation analysis (CCA) \cite{Avants2010b}
-shows that CCA may improve network reliability in both ASL and BOLD
-network analysis \cite{Duda2013} and this approach may also be employed.
-\newline
-\noindent{\em Graph analysis:} To each correlation matrix, sparsity thresholds are
-applied to binarize the edges, such that the bottom 50\% to 97.5\% of
-the edges are discarded and the remaining edges set to a common
-weight of 1.  This approach maintains graph density across subjects
-and controls for inter-subject variation in base correlation levels
-\cite{Liu2008, Power2011, Schwarz2011, Braun2012, Liang2012}. 
-On the binarized graphs, a variety of network measures may be
-computed including metrics such as: transitivity,
-modularity, efficiency, clustering coefficient, characteristic path
-length, and small-worldness. These metrics measure efficiency of
-information transmission and community structure, and are calculated
-with the R package brainwaver \cite{Achard2006}.
-
-
-\begin{figure}
-  \centering
-  \includegraphics[width=0.8\textwidth]{figs/template50_60.pdf}
-  \caption{Sample multivariate template constructed from a subset of the IXI data (female, age 50--60).  Axial slices of five of the 37 total subjects from this cohort are shown. }
-  \label{fig:template}
-\end{figure}
-
 
