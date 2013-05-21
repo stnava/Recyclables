@@ -60,3 +60,14 @@ The flexibility of R's linear model functionality also makes tasks that are not 
 \end{equation}
 Taking the residual of this model (i.e., the portion of CBF that is not explained by the tissue distribution within a given voxel) is equivalent to performing a partial volume correction.  Once corrected for partial volume effect, the data can be processed using the same method as Equation \ref{eqn:fmri}. 
 
+\begin{figure}
+\centering
+\includegraphics[width=5cm]{figs/bntrenderLateral1.png}
+\includegraphics[width=5cm]{figs/bntrenderSagittal1.png}
+\includegraphics[width=5cm]{figs/bntrenderSagittal2.png}
+\includegraphics[width=5cm]{figs/bntrenderLateral2.png}
+\caption{A demonstration of how ANTsR can be used to find regions that are predictive of performance on the Boston Naming Test.  These regions were found in a training set of data, and then used to predict performance in a testing set.}
+\label{fig:bnt}
+\end{figure}
+
+In addition to performing standard correlation studies, R provides powerful tools for more rigorous model evaluation, including cross-validation and bootstrapping, and using predetermined coefficients to predict an outcome on unseen data.  Predicting outcomes on data not used for construction of a model is crucial for verifying a model's generalizability and minimizing the possibility of overfitting.  In addition, the root mean square error and similar metrics provide interpretable and intuitively meaningful measures of how well a model matches the data.  Figure \ref{fig:bnt} shows how these techniques can be used to identify regions that are predictive of performance on the Boston Naming Test. 
