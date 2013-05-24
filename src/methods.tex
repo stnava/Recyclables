@@ -9,36 +9,51 @@ processing for multiple modalities is based on, first, defining a
 template to guide the population normalization and segmentation
 procedures \cite{Avants2011a,Avants2011}.  Traditionally, this
 approach was used for single modalities but, more recently, is
-exetended for multiple modalities via multiple-modality cohort-specific templates
+extended for multiple modalities via multiple-modality cohort-specific templates
 that capture the average shape and appearance of T1, DTI and
 functional images, as in \cite{Kim2010,Avants2011a,Jain2012,Tustison2012}.  We use the
 template to guide brain extraction for all modalities and subsequent
-tissue or neuroanatomical parcellation \cite{Avants2011a}.  
-This general procedure allows several complementary measurements to be
-extracted from neuroimaging including: 
+tissue or neuroanatomical parcellation \cite{Avants2011a,Wang2013}.  
 
-\noindent{\em Jacobian-based Volume from T1-weighted MRI:}  Image registration
-methods are able to use T1 MRI to obtain voxel-wise measurement of the
-subject structural volume relative to a group local template or
-relative to a baseline timepoint.  These measurements are used in
-Tensor-Based Morphometry (TBM) which, when performed symmetrically as
-in my prior work \cite{Yushkevich2010a,Das2012}, is highly accurate
-and provides detailed information on shape change over time
-\cite{Brambati2007,Hua2011,Kim2013} or across a population \cite{Kim2008,Massimo2009,Morgan2011,Hanson2010,Hanson2012}.
+Our prior work on TBI reveals effects in thalamus \cite{Avants2008a}
+and thalamocortical networks \cite{J.T.Duda2008}.  We used ANTs
+methods to uncover widespread structural effects cross-sectionally
+\cite{Kim2008} and (more preliminarily) longitudinally \cite{Kim2013}.
+In terms of function, we identified TBI effects in default mode
+network \cite{Duda2013} and cerebral blood flow \cite{Kim2010}.  Thus,
+multiple modality procedures enable several complementary measurements
+to characterize TBI:
+
+\noindent{\em Jacobian-based Volume from T1-weighted MRI:} Image
+registration methods are able to use T1 MRI to obtain voxel-wise
+measurement of the subject structural volume relative to a group local
+template or relative to a baseline timepoint.  These measurements are
+used in Tensor-Based Morphometry (TBM) which, when performed
+symmetrically \cite{Yushkevich2010a,Das2012}, is highly accurate and
+provides detailed information on shape change over time
+\cite{Brambati2007,Hua2011,Kim2013} or across a population
+\cite{Kim2008,Massimo2009,Morgan2011,Hanson2010,Hanson2012}.  
 
 \noindent{\em Cortical thickness from T1-weighted MRI:}  A measurement
 that is both sensitive and specific in neurodegeneration
 \cite{Stricker2012,Libon2012,McMillan2013} and which is associated
-with cognitive decline \cite{Dickerson2011,Avants2010}.  
+with cognitive decline \cite{Dickerson2011,Avants2010}.  Cortical
+thickness has yet to be applied to mTBI but we believe that it will
+explain variance in recovery potential within the mTBI population in
+particular in the anterior efferent projections of thalamocortical networks
+such as the middle frontal and orbitofrontal cortex.
 
-\noindent{\em Measurements derived from DTI:}  Fractional anisotropy
-measurement of white matter integrity that may reveal the connectivity
+\noindent{\em Measurements derived from DTI:} Fractional anisotropy
+measurement of white matter integrity that reveal connectivity
 components of neurodegeneration \cite{Zhang2009}, aging
-\cite{Kochunov2011} potentially captures
-a different aspect of the disease process \cite{Englund2004} and may
-differentiate tau and TDP-43 effects \cite{McMillan2013b}.  Relatedly,
-mean, radial or axial diffusion relate to age and cognition \cite{Wu2011,Pal2011,Bava2011,ODwyer2012,Bjoernebekk2012}, neurodegeneration \cite{Salami2012,Whitwell2010}
-and are particularly sensitive to TBI \cite{Huang2009,Fox2013}.
+\cite{Kochunov2011} potentially captures a different aspect of the
+disease process \cite{Englund2004} and may differentiate tau and
+TDP-43 effects \cite{McMillan2013b}.  Relatedly, mean, radial or axial
+diffusion relate to age and cognition
+\cite{Wu2011,Pal2011,Bava2011,ODwyer2012,Bjoernebekk2012},
+neurodegeneration \cite{Salami2012,Whitwell2010} and are particularly
+sensitive to TBI \cite{Huang2009,Fox2013}.  We will characterize mean and radial diffusion
+within thalamocortical networks.
 
 \noindent{\em BOLD or ASL Network Analysis:} BOLD-based network analysis
 \cite{Spoormaker2010,Sanz-Arigita2010} has emerged as a powerful tool
